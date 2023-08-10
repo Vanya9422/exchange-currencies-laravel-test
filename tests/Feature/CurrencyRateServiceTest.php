@@ -14,6 +14,12 @@ class CurrencyRateServiceTest extends TestCase
 {
     use DatabaseTransactions;
 
+    /**
+     * Проверяет синхронизацию данных о курсах валют с валидным XML.
+     * Тест проверяет, что данные из фейковых XML-ответов корректно обрабатываются и сохраняются в базе данных.
+     *
+     * @return void
+     */
     public function testSyncToDbWithValidXml()
     {
         Http::fake([
@@ -39,6 +45,12 @@ class CurrencyRateServiceTest extends TestCase
         ]);
     }
 
+    /**
+     * Проверяет получение текущего курса существующей валюты.
+     * Тест создает запись о курсе USD в базе данных и проверяет, что метод getCurrentRate корректно возвращает этот курс.
+     *
+     * @return void
+     */
     public function testGetCurrentRateForExistingCurrency()
     {
         // создаем запись в базе данных с определенным кодом валюты (например, USD) и соответствующим курсом
@@ -56,6 +68,12 @@ class CurrencyRateServiceTest extends TestCase
         $this->assertEquals(87.87, $rate);
     }
 
+    /**
+     * Проверяет выброс исключения при получении текущего курса несуществующей валюты.
+     * Тест проверяет, что при попытке получить курс для несуществующей валюты выбрасывается исключение.
+     *
+     * @return void
+     */
     public function testGetCurrentRateForNonExistingCurrencyThrowsException()
     {
         $this->expectException(\RuntimeException::class);
@@ -63,6 +81,12 @@ class CurrencyRateServiceTest extends TestCase
         $service->getCurrentRate(CurrencyEnum::KGHS);
     }
 
+    /**
+     * Проверяет парсинг XML-ответа с валидным содержимым.
+     * Тест проверяет, что метод parseXmlResponse корректно обрабатывает валидный XML-ответ и возвращает непустой массив.
+     *
+     * @return void
+     */
     public function testParseXmlResponseWithValidXml()
     {
         Http::fake([
@@ -77,6 +101,12 @@ class CurrencyRateServiceTest extends TestCase
         $this->assertNotEmpty($result);
     }
 
+    /**
+     * Проверяет выброс исключения при парсинге невалидного XML-ответа.
+     * Тест проверяет, что при попытке парсинга невалидного XML-ответа выбрасывается исключение.
+     *
+     * @return void
+     */
     public function testParseXmlResponseWithInvalidXmlThrowsException()
     {
         $this->expectException(\RuntimeException::class);
